@@ -2,6 +2,14 @@
 name = "wacky_bag_hlist"
 version = "0.1.0"
 edition = "2024"
+authors = ["XNTEABDSC"]
+description = "Some tool for frunk::hlist"
+license = "MIT"
+keywords = [
+    "Frunk",
+    "HList",
+    "Generic",
+]
 
 [dependencies]
 frunk = "0.4.4"

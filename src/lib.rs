@@ -1,6 +1,8 @@
-#![warn(missing_doc)]
+#![warn(missing_docs)]
+//! Some tool for [`frunk::hlist`]
 
 // pub mod h_type_mappable;
+
 pub mod h_list_helpers;
 pub mod h_h_zippable;
 pub mod h_extend_by_fn;

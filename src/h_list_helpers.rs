@@ -261,7 +261,7 @@ new_struct_func!{
 
 new_struct_func!{
 	pub MapRef<'a>
-	impl<T> {where T:'a}:
+	impl<T> {where T:'a} :
 	(T) <-> (&'a T)
 }
 

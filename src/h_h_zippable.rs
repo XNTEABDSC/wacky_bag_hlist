@@ -1,4 +1,7 @@
-use frunk::{Func, HCons, HNil, Poly, hlist::HMappable};
+//! [`HHZippable`]
+//! [`HTranspose`]
+
+use frunk::{HCons, HNil, Poly, hlist::HMappable};
 
 use crate::h_list_helpers::MapToHList;
 /// zip 2 hlist by HCons
@@ -82,20 +85,20 @@ pub trait HTranspose {
 	# Example
 	```
 	# use frunk::hlist;
-	# use wacky_bag::utils::h_h_zippable::HTranspose;
+	# use wacky_bag_hlist::utils::h_h_zippable::HTranspose;
 	assert_eq!(
 		hlist![
 			hlist![1  ,2  ,3  ,4  ],
 			hlist![1.0,2.0,3.0,4.0],
-			hlist!["1","2","3",   ]
+			hlist!["1","2","3","4"]
 		].h_transpose(),
 		hlist![
-			hlist![1,1.0,"1"],
-			hlist![2,2.0,"2"],
-			hlist![3,3.0,"3"],
-			hlist![4,4.0,   ],
+			hlist![1  ,1.0,"1"],
+			hlist![2  ,2.0,"2"],
+			hlist![3  ,3.0,"3"],
+			hlist![4  ,4.0,"4"],
 		]
-	);
+	)
 	```
 	*/
 	fn h_transpose(self)->Self::Transposed;
