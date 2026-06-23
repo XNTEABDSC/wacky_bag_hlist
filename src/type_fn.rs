@@ -5,8 +5,6 @@ use std::{any::type_name, marker::PhantomData};
 use frunk::Func;
 
 /// You can consider that this is a function about type
-/// 
-/// auto impl TypeFunc for F:[Func]
 pub trait TypeFunc<Input>{
 	/// `Output` type
 	type Output;
@@ -30,8 +28,6 @@ pub trait TypeFunc<Input>{
 // }
 
 /// Shows how to find Input via Output
-/// 
-/// auto impl TypeFunc for F:[BijectiveFunc]
 pub trait BijectiveTypeFunc<Output> : TypeFunc<Self::Input,Output = Output> {
 	/// `Input` type
 	type Input;
@@ -55,7 +51,7 @@ pub trait BijectiveFunc<Output> : Func<Self::Input,Output = Output> {
 #[derive(Debug,Default,Clone, Copy)]
 pub struct ReverseFunc<T>(pub T);
 impl<T,I,O> TypeFunc<O> for ReverseFunc<T>
-	where T:BijectiveTypeFunc<O,Input = I>//BijectiveTypeFunc<I,O>
+	where T:BijectiveTypeFunc<O,Input = I>
 {
 	type Output=I;
 }
@@ -125,7 +121,7 @@ impl<T,I,O> BijectiveFunc<O> for FuncAsTypeFunc<T>
 
 /// converts [TypeFunc] into [Func] that uses [PhantomData] as input and output
 /// 
-/// useful in type expression that can't provide actual call, while can be used by [super::h_list_helpers::HMapP]
+/// useful in type expression that can't provide implementation, while can be used by [super::h_list_helpers::HMapP]
 pub struct TypeFnAsPhantomFn<F>(pub F);
 
 impl<T,I,O> Func<PhantomData<I>> for TypeFnAsPhantomFn<T>
@@ -159,11 +155,11 @@ impl<T,I,O> BijectiveFunc<PhantomData<O>> for TypeFnAsPhantomFn<T>
 
 /// `PhantomData<T>` to `T` and should only be used as type wrapping.
 /// 
-/// impl [Func] is provided only to make use of hlist functions type expression but NOT value calculating.
+/// impl [Func] is provided only to make use of hlist functions type expression but NOT to be called.
 /// 
 /// # Panic
 /// 
-/// Panics when used in [frunk::HCons::map] as `mapper`
+/// Panics when used e.g. in [frunk::HCons::map] as `mapper`
 #[derive(Debug)]
 pub struct MapFromPhantomDataPanic(());
 
@@ -259,12 +255,12 @@ new_struct_func!(
 	pub MapToPhantom // name, can have <T>
 	impl<T> // impl with generic parameter, can add where clause inside a {}
 	:
-	(T) <-> (PhantomData<T>) // input output type, -> is one side, <-> is bijective
+	(T) <-> (PhantomData<T>) // input output type, -> is one dir (injective), <-> is bijective
 	|_i|Default::default() // FnOnce(T)->PhantomData<T>
 	// |_p|panic!() // BijectiveFunc if you want
 );
 ```
-another 
+another example
 ```
 # use std::iter::Chain;
 # use wacky_bag_hlist::new_struct_func;
@@ -278,44 +274,60 @@ new_struct_func!(
 );
 ```
 
-# Problem
-
-you cant use lifetime param at impl if you have type param at struct because "lifetime param must before type param"
-
-there is a weird bug about lifetime and ty capturing.
 */
 #[macro_export]
 macro_rules! new_struct_func {
 
-($(#[$meta:meta])* $vis:vis $name:ident impl $(< $($i_g:tt),+ >)? $( { where $($where:tt)+ })?: $($then:tt)* ) => {
+($(#[$meta:meta])* $vis:vis $name:ident < $($tt:tt),* >  impl $({ where $($where:tt)+ })? : $($then:tt)* ) => {
 	$(#[$meta])*
 
-	#[doc = stringify!( < $($($i_g),*)? > for $name 
+	#[doc = stringify!( <  $($tt),* > for $name < $($tt),* >
 
 	$({where $($where)+})?: 
 
 	$($then)* )]
+
+	$vis struct $name < $($tt),* > (pub PhantomData< $crate::phantom_data_type_params!( $($tt),* ) >);
+
+	$crate::impl_phantom!{ $name < $($tt),* >}
+
+	$crate::impl_func!{ <  $($tt),* > for $name< $($tt),* > $({where $($where)+})?: $($then)* }
+};
+
+($(#[$meta:meta])* $vis:vis $name:ident impl $(< $($tt:tt),* >)? $( { where $($where:tt)+ })?: $($then:tt)* ) => {
+	$(#[$meta])*
+
+	#[doc = stringify!( $(< $($tt),* >)? for $name $({where $($where)+})?: $($then)* )]
+	
 	#[derive(Debug,Default,Clone,Copy)]
 	$vis struct $name;
 
-	$crate::impl_func!{ $(< $($i_g),+ >)? for $name $({where $($where)+})?: $($then)* }
+	$crate::impl_func!{ $(< $($tt),* >)? for $name $({where $($where)+})?: $($then)* }
 };
 
-($(#[$meta:meta])* $vis:vis $name:ident < $($g:tt),+ >  impl $(< $($i_g:tt),+ >)? $( { where $($where:tt)+ })?: $($then:tt)* ) => {
+($(#[$meta:meta])* $vis:vis $name:ident < $($sglt:lifetime),* >  $($then:tt)* ) =>{
+	$crate::new_struct_func!($(#[$meta])* $vis $name < $($sglt,)* >  $($then)*);
+};
+
+($(#[$meta:meta])* $vis:vis $name:ident < $($sglt:lifetime,)* $($sgty:ident),* >  impl < $($iglt:lifetime),* > $($then:tt)* ) =>{
+	$crate::new_struct_func!($(#[$meta])* $vis $name < $($sglt,)* $($sgty),* >  impl < $($iglt,)* > $($then)*);
+};
+
+($(#[$meta:meta])* $vis:vis $name:ident < $($sglt:lifetime,)* $($sgty:ident),* >  impl < $($iglt:lifetime,)* $($igty:ident),* > $( { where $($where:tt)+ })?: $($then:tt)* ) => {
 	$(#[$meta])*
 
-	#[doc = stringify!( < $($g),* , $($($i_g),*)? > for $name<$($g),*> 
+	#[doc = stringify!( <  $($sglt,)* $($sgty,)*  $($iglt,)* $($igty),*  > for $name <$($sglt),*$($sgty),*>
 
 	$({where $($where)+})?: 
 
 	$($then)* )]
-	$vis struct $name< $($g),* >(pub PhantomData< $crate::phantom_data_type_params!($($g),*) >);
 
-	$crate::impl_phantom!{$name< $($g),* >}
+	$vis struct $name <$($sglt,)* $($sgty),*> (pub PhantomData< $crate::phantom_data_type_params!( $($sglt),*$($sgty),* ) >);
 
-	$crate::impl_func!{ < $($g),* , $($($i_g),*)? > for $name<$($g),*> $({where $($where)+})?: $($then)* }
+	$crate::impl_phantom!{ $name <$($sglt),*$($sgty),*>}
+
+	$crate::impl_func!{ <  $($sglt,)* $($sgty,)* $($iglt,)* $($igty),* > for $name< $($sglt,)* $($sgty),* > $({where $($where)+})?: $($then)* }
 	};
-
 }
 
 
@@ -345,8 +357,42 @@ macro_rules! impl_func_clause {
 mod test{
     use std::ops::{Add};
 
-use frunk::{Poly, hlist};
+	use frunk::{Poly, hlist};
 
+	// new_struct_func!(
+	// 	Dwawdadw
+	// 	impl<T> {where T:Add+Clone}:
+	// 	(T) -> (<T as Add<T>>::Output) |i|i.clone()+i
+	// );
+
+	// struct Dwawdadw2;
+
+	// impl_func!( < T > for Dwawdadw2 {where T : Add+Clone} : (T) -> (< T as Add < T >>:: Output) | i | i . clone () + i);
+
+
+	macro_rules! awdawd {
+		// ( $($sglt:lifetime),* ) => {
+		// 	stringify!( $($sglt),* )
+		// };
+		
+		// ( $($sglt:lifetime,)*  $(sgty:ty),*) => {
+		// 	stringify!( $($sglt,)*  $($sgty),* )
+		// };
+
+		( $($lt:lifetime),*)=>{
+			stringify!( $($lt,)*)
+		};
+
+		( $($lt:lifetime,)* $($ty:ident),* )=>{
+			stringify!( $($lt,)* $($ty),*)
+		}
+	}
+
+	macro_rules! sort_generic_lifetime_type {
+		(  $( $($lt:lifetime)? $($ty:ident)?  ),* $(,)?) => {
+			stringify!( $( $($lt,)? )*  $( $($ty,)? )*   )
+		};
+	}
 	#[test]
 	fn test_impl_func_clause(){
 		let func=impl_func_clause!(<T>{where T:Add<T>+Clone}: (T) -> (<T as Add<T>>::Output) |i|i.clone()+i);
@@ -354,5 +400,12 @@ use frunk::{Poly, hlist};
 			hlist![1,2.0,3usize].map(Poly(func)),
 			hlist![2,4.0,6usize]
 		);
+		let _awdawdawd1=awdawd!();
+		let _awdawdawd2=awdawd!(i32,i64);
+		let _awdawdawd3=awdawd!('static,'static);
+		let _awdawdawd4=awdawd!('static,'static,i32,i64);
+		let dwadwa1=sort_generic_lifetime_type!('static,i32,'static,i64);
+		// println!("{}",dwadwa1);
+		assert_eq!(dwadwa1,"'static, 'static, i32, i64,");
 	}
 }
