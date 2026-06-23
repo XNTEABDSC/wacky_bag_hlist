@@ -11,6 +11,7 @@ pub mod type_fn;
 pub mod utils;
 pub mod chain_fn;
 pub mod output_map;
+pub mod select_zip;
 
 #[cfg(test)]
 mod tests {
