@@ -353,6 +353,54 @@ macro_rules! impl_func_clause {
 	}
 };
 }
+
+/// [`Func`] for `pub Name<T>(pub T);`
+#[macro_export]
+macro_rules! new_new_type_func {
+	($nt_name:ident 
+		$($once_fn_name_vis:vis $once_fn_name:ident)? 
+		$(ref $ref_fn_name_vis:vis $ref_fn_name:ident)?
+		$(mut $mut_fn_name_vis:vis $mut_fn_name:ident)?
+	) => {
+		$(
+			$crate::new_struct_func!{
+				$once_fn_name_vis $once_fn_name
+				impl<T>:
+				(T)<->($nt_name<T>)
+				|i|$nt_name(i),
+				|i|i.0
+			}
+		)?
+		$(
+			$crate::new_struct_func!{
+				$ref_fn_name_vis $ref_fn_name
+				impl<'a,T>:
+				(&'a $nt_name<T>)<->(&'a T)
+				|i|&i.0
+			}
+		)?
+		$(
+			$crate::new_struct_func!{
+				$mut_fn_name $mut_fn_name
+				impl<'a,T>:
+				(&'a mut $nt_name<T>)<->(&'a mut T)
+				|i|&mut i.0
+			}
+		)?
+	};
+}
+/// [`Func`] for `pub Name<T>(PhantomData<T>);`
+#[macro_export]
+macro_rules! new_new_phantom_type_func {
+	($nt_name:ident $vis:vis $fn_name:ident ) => {
+		$crate::new_struct_func!(
+			$vis $fn_name
+			impl<T>:
+			(T)<->($nt_name<T>)
+			|_|Default::default()
+		);
+	};
+}
 #[cfg(test)]
 mod test{
     use std::ops::{Add};

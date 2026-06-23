@@ -1,3 +1,5 @@
+//! utils
+
 pub mod impl_phantom;
 
 /// showing that F is `impl FnOnce(I)->O`

@@ -1,3 +1,4 @@
+//! [`phantom_data_type_params`]
 /// generates generic parameter for PhantomData
 /**
 `PhantomData< phantom_data_type_params!('static,'static, i32,i64) >`

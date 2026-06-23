@@ -1,3 +1,5 @@
+//! [`ChainFunc`]
+
 use frunk::Func;
 
 use crate::type_fn::{BijectiveFunc, BijectiveTypeFunc, TypeFunc};
