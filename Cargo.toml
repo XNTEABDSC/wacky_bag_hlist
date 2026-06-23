@@ -10,6 +10,6 @@ keywords = [
     "HList",
     "Generic",
 ]
-
+repository = "https://github.com/XNTEABDSC/wacky_bag_hlist"
 [dependencies]
 frunk = "0.4.4"
