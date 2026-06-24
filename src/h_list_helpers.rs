@@ -117,6 +117,12 @@ new_struct_func!{
 }
 
 new_struct_func!{
+	pub MapFromMut
+	impl<'a,T>:
+	(&'a mut T) -> (T)
+}
+
+new_struct_func!{
 	pub SetMut
 	impl<'a,T>:
 	((&'a mut T,T)) -> (())
