@@ -366,7 +366,7 @@ macro_rules! new_new_type_func {
 			$crate::new_struct_func!{
 				$once_fn_name_vis $once_fn_name
 				impl<T>:
-				(T)<->($nt_name<T>)
+				(T) <-> ($nt_name<T>)
 				|i|$nt_name(i),
 				|i|i.0
 			}
@@ -375,15 +375,15 @@ macro_rules! new_new_type_func {
 			$crate::new_struct_func!{
 				$ref_fn_name_vis $ref_fn_name
 				impl<'a,T>:
-				(&'a $nt_name<T>)<->(&'a T)
+				(&'a $nt_name<T>) <-> (&'a T)
 				|i|&i.0
 			}
 		)?
 		$(
 			$crate::new_struct_func!{
-				$mut_fn_name $mut_fn_name
+				$mut_fn_name_vis $mut_fn_name
 				impl<'a,T>:
-				(&'a mut $nt_name<T>)<->(&'a mut T)
+				(&'a mut $nt_name<T>) <-> (&'a mut T)
 				|i|&mut i.0
 			}
 		)?
