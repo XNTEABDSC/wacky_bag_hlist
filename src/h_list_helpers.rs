@@ -30,6 +30,40 @@ new_struct_func!{
 	|i|i.deref()
 }
 
+new_struct_func!{
+	pub MapDerefMut
+	impl <'a,TA,TB>
+	{where TA:'a+Deref<Target=TB>+DerefMut,TB:'a}:
+	(&'a mut TA) -> (&'a mut TB)
+	|i|i.deref_mut()
+}
+/// deref_mut smth and return things unrelated to its lifetime
+#[derive(Debug,Default,Clone, Copy)]
+pub struct TakeDerefMap<F>(pub F);
+
+impl<F,I,O,IM> Func<IM> for TakeDerefMap<F>
+	where for<'a> F:Func<&'a I,Output = O>,IM:Deref<Target = I>
+{
+	type Output=O;
+
+	fn call(i: IM) -> Self::Output {
+		F::call(i.deref())
+	}
+}
+/// deref_mut smth and return things unrelated to its lifetime
+#[derive(Debug,Default,Clone, Copy)]
+pub struct TakeDerefMutMap<F>(pub F);
+
+impl<F,I,O,IM> Func<IM> for TakeDerefMutMap<F>
+	where for<'a> F:Func<&'a mut I,Output = O>,IM:Deref<Target = I>+DerefMut
+{
+	type Output=O;
+
+	fn call(mut i: IM) -> Self::Output {
+		F::call(i.deref_mut())
+	}
+}
+
 /// `ta:TA` -> `ta.deref():TB`, with TF: TA <-> TB specified by `TF`
 pub struct MapDerefT<TF>(PhantomData<TF>);
 

@@ -1,6 +1,6 @@
 //! type fn
 
-use std::{any::type_name, marker::PhantomData};
+use std::{any::type_name, marker::PhantomData, str::FromStr};
 
 use frunk::Func;
 
@@ -275,17 +275,25 @@ new_struct_func!(
 ```
 
 */
+// static awdawd:&str="awdawd"+"awd";
+
 #[macro_export]
 macro_rules! new_struct_func {
 
 ($(#[$meta:meta])* $vis:vis $name:ident < $($tt:tt),* >  impl $({ where $($where:tt)+ })? : $($then:tt)* ) => {
 	$(#[$meta])*
 
-	#[doc = stringify!( <  $($tt),* > for $name < $($tt),* >
+	#[doc = 
+	concat!(
+		"`",
+		stringify!( <$($tt),*> for $name<$($tt),*>
 
-	$({where $($where)+})?: 
+		$({where $($where)+})?: 
 
-	$($then)* )]
+		$($then)* ),
+		"`"
+	)
+	]
 
 	$vis struct $name < $($tt),* > (pub PhantomData< $crate::phantom_data_type_params!( $($tt),* ) >);
 
@@ -297,12 +305,40 @@ macro_rules! new_struct_func {
 ($(#[$meta:meta])* $vis:vis $name:ident impl $(< $($tt:tt),* >)? $( { where $($where:tt)+ })?: $($then:tt)* ) => {
 	$(#[$meta])*
 
-	#[doc = stringify!( $(< $($tt),* >)? for $name $({where $($where)+})?: $($then)* )]
+	#[doc = concat!(
+		"`",
+		stringify!($(<$($tt),*>)? for $name 
+		
+		$({where $($where)+})?: 
+		
+		$($then)*),
+		"`"
+	)]
 	
 	#[derive(Debug,Default,Clone,Copy)]
 	$vis struct $name;
 
 	$crate::impl_func!{ $(< $($tt),* >)? for $name $({where $($where)+})?: $($then)* }
+};
+
+($(#[$meta:meta])* $vis:vis $name:ident < $($sglt:lifetime,)* $($sgty:ident),* >  impl < $($iglt:lifetime,)* $($igty:ident),* > $( { where $($where:tt)+ })?: $($then:tt)* ) => {
+	$(#[$meta])*
+
+	#[doc = concat!(
+		"`",
+		stringify!(<$($sglt,)* $($sgty,)*  $($iglt,)* $($igty),*> for $name <$($sglt),*$($sgty),*>
+
+		$({where $($where)+})?: 
+
+		$($then)*),
+		"`"
+	)]
+
+	$vis struct $name <$($sglt,)* $($sgty),*> (pub PhantomData< $crate::phantom_data_type_params!( $($sglt),*$($sgty),* ) >);
+
+	$crate::impl_phantom!{ $name <$($sglt),*$($sgty),*>}
+
+	$crate::impl_func!{ <  $($sglt,)* $($sgty,)* $($iglt,)* $($igty),* > for $name< $($sglt,)* $($sgty),* > $({where $($where)+})?: $($then)* }
 };
 
 ($(#[$meta:meta])* $vis:vis $name:ident < $($sglt:lifetime),* >  $($then:tt)* ) =>{
@@ -312,22 +348,6 @@ macro_rules! new_struct_func {
 ($(#[$meta:meta])* $vis:vis $name:ident < $($sglt:lifetime,)* $($sgty:ident),* >  impl < $($iglt:lifetime),* > $($then:tt)* ) =>{
 	$crate::new_struct_func!($(#[$meta])* $vis $name < $($sglt,)* $($sgty),* >  impl < $($iglt,)* > $($then)*);
 };
-
-($(#[$meta:meta])* $vis:vis $name:ident < $($sglt:lifetime,)* $($sgty:ident),* >  impl < $($iglt:lifetime,)* $($igty:ident),* > $( { where $($where:tt)+ })?: $($then:tt)* ) => {
-	$(#[$meta])*
-
-	#[doc = stringify!( <  $($sglt,)* $($sgty,)*  $($iglt,)* $($igty),*  > for $name <$($sglt),*$($sgty),*>
-
-	$({where $($where)+})?: 
-
-	$($then)* )]
-
-	$vis struct $name <$($sglt,)* $($sgty),*> (pub PhantomData< $crate::phantom_data_type_params!( $($sglt),*$($sgty),* ) >);
-
-	$crate::impl_phantom!{ $name <$($sglt),*$($sgty),*>}
-
-	$crate::impl_func!{ <  $($sglt,)* $($sgty,)* $($iglt,)* $($igty),* > for $name< $($sglt,)* $($sgty),* > $({where $($where)+})?: $($then)* }
-	};
 }
 
 
