@@ -12,6 +12,7 @@ pub mod utils;
 pub mod chain_fn;
 pub mod output_map;
 pub mod select_zip;
+pub mod variadics_tuple;
 
 #[cfg(test)]
 mod tests {

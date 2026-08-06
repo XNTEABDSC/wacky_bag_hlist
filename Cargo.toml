@@ -13,3 +13,4 @@ keywords = [
 repository = "https://github.com/XNTEABDSC/wacky_bag_hlist"
 [dependencies]
 frunk = "0.4.4"
+variadics_please = "2.0.0"

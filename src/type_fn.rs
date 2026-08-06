@@ -1,6 +1,6 @@
 //! type fn
 
-use std::{any::type_name, marker::PhantomData, str::FromStr};
+use std::{any::type_name, marker::PhantomData};
 
 use frunk::Func;
 
@@ -275,8 +275,6 @@ new_struct_func!(
 ```
 
 */
-// static awdawd:&str="awdawd"+"awd";
-
 #[macro_export]
 macro_rules! new_struct_func {
 

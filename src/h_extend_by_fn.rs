@@ -3,9 +3,8 @@
 
 use std::ops::Add;
 
-use frunk::{Poly, ToRef, hlist::{HMappable, Sculptor}};
+use frunk::{ToRef, hlist::Sculptor};
 
-use crate::h_list_helpers::MapRef;
 
 
 /// `f` sculpt params `FI` from `v` and generates `FO`
