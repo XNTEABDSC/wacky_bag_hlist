@@ -1,6 +1,6 @@
 [package]
 name = "wacky_bag_hlist"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 authors = ["XNTEABDSC"]
 description = "Some tool for frunk::hlist"
