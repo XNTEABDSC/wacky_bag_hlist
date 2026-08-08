@@ -1,12 +1,11 @@
 //! [`HSelectZippable`]
 
-use frunk::{HCons, HNil, Poly, hlist::{HMappable, HZippable, Sculptor}};
+use frunk::{Poly, hlist::{HMappable, HZippable, Sculptor}};
 
-use crate::{h_list_helpers::{HMapP, HTypeFnToMapper, HTypeMapP, HZip}, type_fn::{TypeFnAsPhantomFn, TypeFunc}};
+use crate::h_list_helpers::{HTypeFnToMapper, HTypeMapP, HZip};
 
-/// select b with [TypeFunc], then zip
-/// We dont need a new trait to do this!
-pub fn h_select_zip<A,TypeFunc,B,BIdx>(a:A,_tf:TypeFunc,b:B)
+/// sculpt b, select with TypeFunc, then zip
+pub fn h_sculpt_select_zip<A,TypeFunc,B,BIdx>(a:A,_tf:TypeFunc,b:B)
 -> (HZip< A, HTypeMapP<A,TypeFunc>>, <B as Sculptor< HTypeMapP<A,TypeFunc>, BIdx>>::Remainder)
 where 
 	A:HMappable< Poly<HTypeFnToMapper<TypeFunc>> >,
@@ -15,6 +14,27 @@ where
 {
 	let (b1,b2)=b.sculpt();
 	(a.zip(b1),b2)
+}
+
+/// select b with TypeFunc, then zip
+/// We dont need a new trait to do this!
+pub fn h_select_zip<A,TypeFunc,B>(a:A,_tf:TypeFunc,b:B)
+-> HZip< A, HTypeMapP<A,TypeFunc>>
+where 
+	A:HMappable< Poly<HTypeFnToMapper<TypeFunc>> ,Output = B>,
+	A:HZippable< B >
+{
+	a.zip(b)
+}
+
+
+/// select b with TypeFunc
+pub fn h_select_by_a_fn<A,TypeFunc,B>(b:B,_a:&A,_tf:TypeFunc)
+-> B
+where 
+	A:HMappable< Poly<HTypeFnToMapper<TypeFunc>> ,Output = B>,
+{
+	b
 }
 
 // pub trait HSelectZippable<TypeFunc,B,BIdx> {
