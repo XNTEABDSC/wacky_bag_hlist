@@ -6,11 +6,17 @@ authors = ["XNTEABDSC"]
 description = "Some tool for frunk::hlist"
 license = "MIT"
 keywords = [
-    "Frunk",
-    "HList",
-    "Generic",
+    "frunk",
+    "hlist",
+	"variadics"
 ]
+categories = ["rust-patterns"]
 repository = "https://github.com/XNTEABDSC/wacky_bag_hlist"
+
 [dependencies]
 frunk = "0.4.4"
 variadics_please = "2.0.0"
+
+[profile.release]
+opt-level = 3
+lto = true
