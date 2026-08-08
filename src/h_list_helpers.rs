@@ -203,7 +203,9 @@ pub type Sum<A,B>=<A as Add<B>>::Output;
 /// `HList` -> [MapToPhantom] -> `TypeFunc` -> [MapFromPhantomPanic]
 /// 
 /// `HMapP<HMapP<HMapP<HList,MapToPhantom>,TypeFn>,MapPhantomType>`
-pub type HTypeMapP<HList,TypeFunc> = HMapP<HMapP<HMapP<HList,MapToPhantom>,TypeFunc>,MapFromPhantomDataPanic>;
+pub type HTypeMapP<HList,TypeFunc> = 
+	HMapP<HList,HTypeFnToMapper<TypeFunc>>;
+// HMapP<HMapP<HMapP<HList,MapToPhantom>,TypeFunc>,MapFromPhantomDataPanic>; use HTypeFnToMapper instead of 3 HMapP, or else more where is required
 
 /// Convert `TypeFn` from [TypeFunc] to [Func] that can be used in [HMapP]
 /// 
