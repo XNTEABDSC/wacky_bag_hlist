@@ -1,4 +1,16 @@
-//! type fn
+//! type fn and utilities
+
+// //! [`TypeFunc`]
+// //! [`BijectiveTypeFunc`]
+// //! [`BijectiveFunc`]
+// //! [`ReverseFunc`]
+// //! [`FuncAsTypeFunc`]
+// //! [`TypeFnAsPhantomFn`]
+// //! [`impl_func`]
+// //! [`new_struct_func`]
+// //! [`impl_func_clause`]
+// //! [`new_new_type_func`]
+// //! [`new_new_phantom_type_func`]
 
 use std::{any::type_name, marker::PhantomData};
 
@@ -17,13 +29,11 @@ pub trait TypeFunc<Input>{
 // 	type Output=O;
 // }
 
-
 // pub trait TypeFuncRev<Output> {
 // 	type Input;
 // }
 
 // you will find BijectiveTypeFunc<Input,Output> useless as a trait bound that requires both Input and Output
-
 // pub trait BijectiveTypeFunc<Input,Output> : TypeFunc<Input,Output = Output>+TypeFuncRev<Output,Input = Input> {
 // }
 

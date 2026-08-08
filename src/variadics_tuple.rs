@@ -1,11 +1,11 @@
-//! Convert bewteen [`HList`] and tuple
+//! Convert bewteen [`HList`] and tuple whose usage implemented by [`variadics_please`]
 //! [`IntoVariadicsTuple`]
 //! [`VariadicsTupleIntoHlist`]
 
 use frunk::{Func, HList, HNil, hlist};
 use variadics_please::{all_tuples, all_tuples_enumerated};
 
-use crate::{new_struct_func, type_fn::{BijectiveFunc, BijectiveTypeFunc, TypeFunc}};
+use crate::type_fn::{BijectiveFunc, BijectiveTypeFunc, TypeFunc};
 
 /// Convert [`HList`] into tuple form that fits [`all_tuples`] that accepts `impl Trait` and tuple of `impl Trait` up to 16. Nest tuples when more than 16.
 /// `HNil` -> ()

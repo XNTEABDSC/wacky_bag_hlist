@@ -45,15 +45,18 @@ mod test{
 	use super::*;
 
 	use crate::{new_new_type_func, type_fn::ReverseFunc};
-
+	
+	#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
 	struct NTS<T>(pub T);
 	new_new_type_func!(NTS MapS);
+	#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
 	struct NTC<T>(pub T);
 	new_new_type_func!(NTC MapC);
+	#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
 	struct A(pub i32);
-	#[derive(Debug,PartialEq, Eq)]
+	#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
 	struct B(pub i32);
-	#[derive(Debug,PartialEq, Eq)]
+	#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
 	struct C(pub i32);
 	fn sum_a_c(hlist_pat![a,c]:HList!(A,C))->i32{
 		a.0+c.0
@@ -62,6 +65,17 @@ mod test{
 	#[test]
 	fn test(){
 		let l=hlist!(NTS(A(1)),NTC(A(2)),NTS(B(3)),NTC(B(4)),NTS(C(5)),NTC(C(6)));
+		// assert_eq!(
+		// 	sum_a_c(
+		// 		l.clone().sculpt().0.map(Poly(ReverseFunc(MapC)))), // type annotations needed
+		// 	2+6);
+		assert_eq!(
+			sum_a_c(
+				HMappableFrom::output_map(
+					l.clone().sculpt().0, // type inferred by requirement
+					Poly(ReverseFunc(MapC)))),
+			2+6);
+
 		let (a,b)=l.sculpt();
 		assert_eq!(
 			sum_a_c(
