@@ -28,12 +28,14 @@ where
 }
 
 
-/// select b with TypeFunc
+/// provide type hint, B is `HTypeMapP<A,TypeFunc>`
 pub fn h_select_by_a_fn<A,TypeFunc,B>(b:B,_a:&A,_tf:TypeFunc)
 -> B
 where 
 	A:HMappable< Poly<HTypeFnToMapper<TypeFunc>> ,Output = B>,
 {
+
+	// let b:HTypeMapP<A,TypeFunc>=b;
 	b
 }
 

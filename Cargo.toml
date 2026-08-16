@@ -1,6 +1,6 @@
 [package]
 name = "wacky_bag_hlist"
-version = "0.3.0"
+version = "0.1.0"
 edition = "2024"
 authors = ["XNTEABDSC"]
 description = "Some tool for frunk::hlist"
@@ -11,7 +11,7 @@ keywords = [
 	"variadics"
 ]
 categories = ["rust-patterns"]
-repository = "https://github.com/XNTEABDSC/wacky_bag_hlist"
+repository = "https://github.com/XNTEABDSC/wacky_bag_hlist"	
 
 [dependencies]
 frunk = "0.4.4"

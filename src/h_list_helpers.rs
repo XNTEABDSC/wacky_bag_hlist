@@ -1,5 +1,36 @@
 //! some helper things for h_list
 
+/*!
+[`MapToPhantom`]
+[`FoldChainIter`]
+[`MapDeref`]
+[`MapDerefMut`]
+[`TakeDerefMap`]
+[`TakeDerefMutMap`]
+[`MapDerefT`]
+[`MapClone`]
+[`MapMutToRef`]
+[`MapNeg`]
+[`MapNegRev`]
+[`MapRef`]
+[`MapFromRef`]
+[`MapMut`]
+[`MapFromMut`]
+[`SetMut`]
+[`FoldVecPush`]
+[`HMap`]
+[`HMapP`]
+[`HZip`]
+[`HToRef`]
+[`HToMut`]
+[`Sum`]
+[`HTypeMapP`]
+[`HTypeFnToMapper`]
+[`HRepeatFrom`]
+[`MapToHList`]
+[`MapClone2`]
+*/
+
 use std::{iter::Chain, marker::PhantomData, ops::{Add, Deref, DerefMut, Neg}};
 
 use frunk::{Func, HCons, HList, HNil, Poly, ToMut, ToRef, hlist::{HMappable, HZippable}};
@@ -209,7 +240,9 @@ pub type HTypeMapP<HList,TypeFunc> =
 
 /// Convert `TypeFn` from [TypeFunc] to [Func] that can be used in [HMapP]
 /// 
-/// PANICS WHEN USED IN [frunk::HCons::map] AS `mapper`
+/// # Panic
+/// 
+/// Panic when used in [frunk::HCons::map] as `mapper`
 /// 
 /// [MapToPhantom] * `TypeFn` * [MapFromPhantomPanic]
 /// 
