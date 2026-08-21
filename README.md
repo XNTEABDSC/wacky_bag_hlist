@@ -53,20 +53,20 @@ assert_eq!(
 
 ```rust
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
- struct NTS<T>(pub T);
- new_new_type_func!(NTS MapS);
- #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
- struct NTC<T>(pub T);
- new_new_type_func!(NTC MapC);
- #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
- struct A(pub i32);
- #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
- struct B(pub i32);
- #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
- struct C(pub i32);
- fn sum_a_c(hlist_pat![a,c]:HList!(A,C))->i32{
-  a.0+c.0
- }
+struct NTS<T>(pub T);
+new_new_type_func!(NTS MapS);
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+struct NTC<T>(pub T);
+new_new_type_func!(NTC MapC);
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+struct A(pub i32);
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+struct B(pub i32);
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+struct C(pub i32);
+fn sum_a_c(hlist_pat![a,c]:HList!(A,C))->i32{
+a.0+c.0
+}
 fn test(){
   let l=hlist!(NTS(A(1)),NTC(A(2)),NTS(B(3)),NTC(B(4)),NTS(C(5)),NTC(C(6)));
   // assert_eq!(
