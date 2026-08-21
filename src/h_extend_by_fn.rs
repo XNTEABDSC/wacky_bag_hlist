@@ -1,3 +1,5 @@
+//! Process hlist by fn, sculpt, f, then add
+//! 
 //! [`h_extend_by_fn`]
 //! [`h_extend_by_fn_ref`]
 

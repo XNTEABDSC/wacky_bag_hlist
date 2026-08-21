@@ -72,7 +72,7 @@ mod test{
 		assert_eq!(
 			sum_a_c(
 				HMappableFrom::output_map(
-					l.clone().sculpt().0, // type inferred by requirement
+					l.clone().sculpt().0, // type inferred by requirement, which is `HList!(NTC<A>, NTC<C>)`
 					Poly(ReverseFunc(MapC)))),
 			2+6);
 

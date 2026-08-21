@@ -1,5 +1,7 @@
 //! Convert bewteen [`HList`] and tuple whose usage implemented by [`variadics_please`]
+//! 
 //! [`IntoVariadicsTuple`]
+//! 
 //! [`VariadicsTupleIntoHlist`]
 
 use frunk::{Func, HList, HNil, hlist};

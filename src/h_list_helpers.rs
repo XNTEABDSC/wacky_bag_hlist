@@ -1,4 +1,4 @@
-//! some helper things for h_list
+//! Some helper things for h_list, including some impl [`Func`] and some type expression (type alias)
 
 /*!
 [`MapToPhantom`]

@@ -1,4 +1,6 @@
-//! [`HSelectZippable`]
+//! Select hlist by another hlist and TypeFunc. And zip if you want.
+
+// Used to be implemented by a trait, but no longer.
 
 use frunk::{Poly, hlist::{HMappable, HZippable, Sculptor}};
 

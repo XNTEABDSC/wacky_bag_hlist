@@ -3,8 +3,8 @@ name = "wacky_bag_hlist"
 version = "0.1.0"
 edition = "2024"
 authors = ["XNTEABDSC"]
-description = "Some tool for frunk::hlist"
-license = "MIT"
+description = "Some tool/utils for frunk::hlist"
+license = "MIT OR Apache-2.0"
 keywords = [
     "frunk",
     "hlist",
@@ -14,7 +14,7 @@ categories = ["rust-patterns"]
 repository = "https://github.com/XNTEABDSC/wacky_bag_hlist"	
 
 [dependencies]
-frunk = "0.4.4"
+frunk = "0.5.0"
 variadics_please = "2.0.0"
 
 [profile.release]

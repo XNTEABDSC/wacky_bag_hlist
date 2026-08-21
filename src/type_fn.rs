@@ -1,4 +1,4 @@
-//! type fn and utilities
+//! [`TypeFunc`] [`BijectiveTypeFunc`] [`BijectiveFunc`] and macros to implement them easily
 
 // //! [`TypeFunc`]
 // //! [`BijectiveTypeFunc`]
@@ -8,7 +8,7 @@
 // //! [`TypeFnAsPhantomFn`]
 // //! [`impl_func`]
 // //! [`new_struct_func`]
-// //! [`impl_func_clause`]
+// //! [`impl_func_closure`]
 // //! [`new_new_type_func`]
 // //! [`new_new_phantom_type_func`]
 
@@ -255,7 +255,7 @@ macro_rules! impl_func {
 }
 
 /**
-creates a new type that impl [`TypeFunc`] [`BijectiveTypeFunc`] [`Func`] [`BijectiveFunc`]
+Make a new type that impl [`TypeFunc`] [`BijectiveTypeFunc`] [`Func`] [`BijectiveFunc`]
 
 # Example
 ```
@@ -360,12 +360,14 @@ macro_rules! new_struct_func {
 
 
 /**
+Nameless [`new_struct_func`]
+
 # Example
 ```
-# use wacky_bag_hlist::impl_func_clause;
+# use wacky_bag_hlist::impl_func_closure;
 # use frunk::{Poly, hlist};
 # use std::ops::Add;
-let func=impl_func_clause!(<T>{where T:Add<T>+Clone}: (T) -> (<T as Add<T>>::Output) |i|i.clone()+i);
+let func=impl_func_closure!(<T>{where T:Add<T>+Clone}: (T) -> (<T as Add<T>>::Output) |i|i.clone()+i);
 assert_eq!(
 	hlist![1,2.0,3usize].map(Poly(func)),
 	hlist![2,4.0,6usize]
@@ -373,7 +375,7 @@ assert_eq!(
 ```
  */
 #[macro_export]
-macro_rules! impl_func_clause {
+macro_rules! impl_func_closure {
 ($($tt:tt)* ) => {
 	{
 		$crate::new_struct_func!(ImplFuncClause impl $($tt)*);
@@ -382,7 +384,7 @@ macro_rules! impl_func_clause {
 };
 }
 
-/// [`Func`] for `pub Name<T>(pub T);`
+/// [`new_struct_func`] for `pub Name<T>(pub T);`
 #[macro_export]
 macro_rules! new_new_type_func {
 	($nt_name:ident 
@@ -417,7 +419,7 @@ macro_rules! new_new_type_func {
 		)?
 	};
 }
-/// [`Func`] for `pub Name<T>(PhantomData<T>);`
+/// [`new_struct_func`] for `pub Name<T>(PhantomData<T>);`
 #[macro_export]
 macro_rules! new_new_phantom_type_func {
 	($nt_name:ident $vis:vis $fn_name:ident ) => {
@@ -429,59 +431,4 @@ macro_rules! new_new_phantom_type_func {
 		);
 	};
 }
-#[cfg(test)]
-mod test{
-    use std::ops::{Add};
 
-	use frunk::{Poly, hlist};
-
-	// new_struct_func!(
-	// 	Dwawdadw
-	// 	impl<T> {where T:Add+Clone}:
-	// 	(T) -> (<T as Add<T>>::Output) |i|i.clone()+i
-	// );
-
-	// struct Dwawdadw2;
-
-	// impl_func!( < T > for Dwawdadw2 {where T : Add+Clone} : (T) -> (< T as Add < T >>:: Output) | i | i . clone () + i);
-
-
-	macro_rules! awdawd {
-		// ( $($sglt:lifetime),* ) => {
-		// 	stringify!( $($sglt),* )
-		// };
-		
-		// ( $($sglt:lifetime,)*  $(sgty:ty),*) => {
-		// 	stringify!( $($sglt,)*  $($sgty),* )
-		// };
-
-		( $($lt:lifetime),*)=>{
-			stringify!( $($lt,)*)
-		};
-
-		( $($lt:lifetime,)* $($ty:ident),* )=>{
-			stringify!( $($lt,)* $($ty),*)
-		}
-	}
-
-	macro_rules! sort_generic_lifetime_type {
-		(  $( $($lt:lifetime)? $($ty:ident)?  ),* $(,)?) => {
-			stringify!( $( $($lt,)? )*  $( $($ty,)? )*   )
-		};
-	}
-	#[test]
-	fn test_impl_func_clause(){
-		let func=impl_func_clause!(<T>{where T:Add<T>+Clone}: (T) -> (<T as Add<T>>::Output) |i|i.clone()+i);
-		assert_eq!(
-			hlist![1,2.0,3usize].map(Poly(func)),
-			hlist![2,4.0,6usize]
-		);
-		let _awdawdawd1=awdawd!();
-		let _awdawdawd2=awdawd!(i32,i64);
-		let _awdawdawd3=awdawd!('static,'static);
-		let _awdawdawd4=awdawd!('static,'static,i32,i64);
-		let dwadwa1=sort_generic_lifetime_type!('static,i32,'static,i64);
-		// println!("{}",dwadwa1);
-		assert_eq!(dwadwa1,"'static, 'static, i32, i64,");
-	}
-}

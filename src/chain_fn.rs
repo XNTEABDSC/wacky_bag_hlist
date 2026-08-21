@@ -1,3 +1,4 @@
+//! Chain 2 [`Func`] as 1
 //! [`ChainFunc`]
 
 use frunk::Func;

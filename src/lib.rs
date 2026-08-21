@@ -6,7 +6,6 @@
 pub mod h_list_helpers;
 pub mod h_h_zippable;
 pub mod h_extend_by_fn;
-pub mod phantom_data_type_params;
 pub mod type_fn;
 pub mod utils;
 pub mod chain_fn;
