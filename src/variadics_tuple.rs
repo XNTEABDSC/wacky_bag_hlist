@@ -10,18 +10,26 @@ use variadics_please::{all_tuples, all_tuples_enumerated};
 use crate::type_fn::{BijectiveFunc, BijectiveTypeFunc, TypeFunc};
 
 /// Convert [`HList`] into tuple form that fits [`all_tuples`] that accepts `impl Trait` and tuple of `impl Trait` up to 16. Nest tuples when more than 16.
+/// 
 /// `HNil` -> ()
-/// `HList<T0>` -> `(T0,)` due to implementation limit of `VariadicsTupleIntoHlist`
-/// `HList<T0,T1 ...>` -> `(T0,T1,...)`
-/// `HList<T0,T1,T...,T14,Then...>` -> `(T0,T1,T...,T14,(Then...))`
+/// 
+/// `HList!(T0)` -> `(T0,)` due to implementation limit of `VariadicsTupleIntoHlist`
+/// 
+/// `HList!(T0,T1 ...)` -> `(T0,T1,...)`
+/// 
+/// `HList!(T0,T1,...,T14,...Then)` -> `(T0,T1,...,T14,(...Then))`
 pub trait ToVariadicsTuple{
 	/// the tuple output
 	type Output;
-	/// Convert [`HList`] into tuple form that fits [`all_tuples`] that accepts `impl Trait` and tuple of `impl Trait` up to 16. Nest tuples when more than 16
+	/// Convert [`HList`] into tuple form that fits [`all_tuples`] that accepts `impl Trait` and tuple of `impl Trait` up to 16. Nest tuples when more than 16.
+	/// 
 	/// `HNil` -> ()
-	/// `HList<T0>` -> `T0`
-	/// `HList<T0,T1 ...>` -> `(T0,T1,...)`
-	/// `HList<T0,T1,T...,T14,Then...>` -> `(T0,T1,T...,T14,(Then...))`
+	/// 
+	/// `HList!(T0)` -> `(T0,)` due to implementation limit of `VariadicsTupleIntoHlist`
+	/// 
+	/// `HList!(T0,T1 ...)` -> `(T0,T1,...)`
+	/// 
+	/// `HList!(T0,T1,...,T14,...Then)` -> `(T0,T1,...,T14,(...Then))`
 	fn to_variadics_tuple(self)->Self::Output;
 }
 

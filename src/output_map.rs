@@ -44,7 +44,7 @@ mod test{
 	use frunk::{HList, Poly, hlist, hlist_pat} ;
 	use super::*;
 
-	use crate::{new_new_type_func, type_fn::ReverseFunc};
+	use crate::{new_new_type_func, reverse_func::ReverseFunc};
 	
 	#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
 	struct NTS<T>(pub T);

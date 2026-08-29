@@ -346,7 +346,7 @@ new_struct_func!(pub MapToHList impl <T> : (T) <-> (HList!(T)) |i|HCons{head:i,t
 
 new_struct_func!{pub MapClone2 < 'a > impl < T > {where T:'a+Clone} : (&'a T) <-> (T) |i|i.clone()}
 
-
+new_struct_func!{pub FoldApply impl<F,I,O> {where F:Func<I,Output=O>}: ( (I,F) )->(O) |(i,_f)|F::call(i)}
 #[cfg(test)]
 mod test{
     use frunk::hlist;

@@ -57,41 +57,6 @@ pub trait BijectiveFunc<Output> : Func<Self::Input,Output = Output> {
 	/// from `Output` to `Input`
 	fn inv_call(output:Output)->Self::Input;
 }
-/// reverse the function if it is bijective
-#[derive(Debug,Default,Clone, Copy)]
-pub struct ReverseFunc<T>(pub T);
-impl<T,I,O> TypeFunc<O> for ReverseFunc<T>
-	where T:BijectiveTypeFunc<O,Input = I>
-{
-	type Output=I;
-}
-
-impl<T,I,O> BijectiveTypeFunc<I> for ReverseFunc<T>
-	where T:TypeFunc<I,Output = O>+BijectiveTypeFunc<O,Input = I>
-{
-	type Input=O;
-}
-
-impl<T,I,O> Func<O> for ReverseFunc<T> 
-	where T:BijectiveFunc<O,Input = I>
-{
-	type Output=I;
-
-	fn call(i: O) -> Self::Output {
-		T::inv_call(i)
-	}
-}
-
-impl<T,I,O> BijectiveFunc<I> for ReverseFunc<T>
-	where T:Func<I,Output = O>+BijectiveFunc<O,Input = I>
-{
-	type Input=O;
-
-	fn inv_call(output:I)->Self::Input {
-		T::call(output)
-	}
-}
-
 
 /// use [`Func`] and [`BijectiveFunc`] as [`TypeFunc`] and [`BijectiveTypeFunc`]
 pub struct FuncAsTypeFunc<F>(pub F);
@@ -255,7 +220,7 @@ macro_rules! impl_func {
 }
 
 /**
-Make a new type that impl [`TypeFunc`] [`BijectiveTypeFunc`] [`Func`] [`BijectiveFunc`]
+Make a new type that impl [`Func`] [`BijectiveFunc`] [`TypeFunc`] [`BijectiveTypeFunc`]
 
 # Example
 ```
@@ -384,7 +349,17 @@ macro_rules! impl_func_closure {
 };
 }
 
-/// [`new_struct_func`] for `pub Name<T>(pub T);`
+/// [`new_struct_func`] for `T` <-> `pub NewType<T>(pub T);`
+/// 
+/// # Example
+/**
+```
+# use wacky_bag_hlist::impl_func_closure;
+pub struct NewType<T>(pub T);
+new_new_type_func!( NewType pub MapNewType );
+```
+*/
+/// Also able to impl `&NewType<T>` -> `&T`, `&mut NewType<T>` -> `&mut T`, 
 #[macro_export]
 macro_rules! new_new_type_func {
 	($nt_name:ident 

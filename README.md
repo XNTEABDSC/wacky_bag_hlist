@@ -107,3 +107,7 @@ assert_eq!(
   hlist![HCons{head:1,tail:HNil},HCons{head:2.0,tail:HNil},hlist!("3")]
 )
 ```
+
+## others
+
+we assume all `impl Func` also `impl Default` so we use variable if can, and use `F::default()` if cant.

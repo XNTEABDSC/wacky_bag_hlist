@@ -12,6 +12,8 @@ pub mod chain_fn;
 pub mod output_map;
 pub mod select_zip;
 pub mod variadics_tuple;
+pub mod h_chain_fn;
+pub mod reverse_func;
 
 #[cfg(test)]
 mod tests {
