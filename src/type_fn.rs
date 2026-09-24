@@ -343,8 +343,8 @@ assert_eq!(
 macro_rules! impl_func_closure {
 ($($tt:tt)* ) => {
 	{
-		$crate::new_struct_func!(ImplFuncClause impl $($tt)*);
-		ImplFuncClause
+		$crate::new_struct_func!(ImplFuncClosure impl $($tt)*);
+		ImplFuncClosure
 	}
 };
 }
