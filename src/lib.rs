@@ -14,6 +14,7 @@ pub mod select_zip;
 pub mod variadics_tuple;
 pub mod h_chain_fn;
 pub mod reverse_func;
+// pub mod labelled_hlist;
 
 #[cfg(test)]
 mod tests {

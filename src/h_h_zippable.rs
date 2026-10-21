@@ -1,6 +1,6 @@
 //! Zip 2 hlist into 1 hlist with hlist inside.
 //! 
-//! Transpose a hlist like a matrix.
+//! Transpose a hlist hlist like a matrix.
 //! 
 //! [`HHZippable`]
 //! [`HTranspose`]

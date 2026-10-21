@@ -1,9 +1,8 @@
+//! [`ReverseFunc`]
+
 use frunk::Func;
 
 use crate::{new_new_type_func, type_fn::{BijectiveFunc, BijectiveTypeFunc, TypeFunc}};
-
-
-
 
 /// reverse the function if it is bijective
 #[derive(Debug,Default,Clone, Copy)]

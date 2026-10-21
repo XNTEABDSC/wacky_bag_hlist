@@ -95,7 +95,9 @@ impl<F,I,O,IM> Func<IM> for TakeDerefMutMap<F>
 	}
 }
 
-/// `ta:TA` -> `ta.deref():TB`, with TF: TA <-> TB specified by `TF`
+/// `ta:TA` -> `ta.deref():TB`, with TF specifying TA and TB
+/// 
+/// Mainly to decide TA via TB
 pub struct MapDerefT<TF>(PhantomData<TF>);
 
 impl_phantom!(MapDerefT<T>);
@@ -356,7 +358,7 @@ mod test{
 	use super::*;
 
 	#[test]
-	fn test() {
+	fn test_repeat() {
 		assert_eq!(
 			hlist![1,2.0,"3"].h_zip(
 				// <HRepeat<_,HNil> as Default>::default()

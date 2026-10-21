@@ -1,11 +1,10 @@
 //! Chain [`HList`] [`Func`]s as 1
 //! [`ChainFunc`]
 
-use std::marker::PhantomData;
 
-use frunk::{Func, HNil, Poly, hlist::{HFoldLeftable, HFoldRightable, HMappable}};
+use frunk::{Func, Poly, hlist::{HFoldLeftable, HFoldRightable, HMappable}};
 
-use crate::{h_list_helpers::FoldApply, impl_func, impl_phantom, new_struct_func, reverse_func::MapReverse, type_fn::{BijectiveFunc, BijectiveTypeFunc, TypeFunc}};
+use crate::{h_list_helpers::FoldApply, reverse_func::MapReverse, type_fn::BijectiveFunc };
 
 /// chain n functions together 
 /// 
@@ -37,9 +36,9 @@ where
 #[cfg(test)]
 mod test{
 	
-    use frunk::{Func, Poly, hlist};
+    use frunk::{Func, hlist};
 
-use crate::{h_chain_fn::HChainFunc, h_list_helpers::FoldApply, new_new_type_func, reverse_func::ReverseFunc};
+	use crate::{h_chain_fn::HChainFunc, h_list_helpers::FoldApply, new_new_type_func, reverse_func::ReverseFunc};
 
 	struct AWD<T>(pub T);
 	new_new_type_func!(AWD MapAWD);
