@@ -13,7 +13,8 @@ pub mod output_map;
 pub mod select_zip;
 pub mod variadics_tuple;
 pub mod h_chain_fn;
-pub mod reverse_func;
+pub mod inverse_func;
+pub mod with_type_hint;
 // pub mod labelled_hlist;
 
 #[cfg(test)]

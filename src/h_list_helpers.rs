@@ -39,9 +39,7 @@ use frunk::{
 };
 
 use crate::{
-    chain_fn::ChainFunc,
-    impl_phantom, new_struct_func,
-    type_fn::{BijectiveTypeFunc, MapFromPhantomDataPanic, TypeFnAsPhantomFn, TypeFunc},
+    chain_fn::ChainFunc, impl_phantom, new_struct_func, type_fn::{BijectiveFunc, BijectiveTypeFunc, MapFromPhantomDataPanic, TypeFnAsPhantomFn, TypeFunc},
 };
 
 new_struct_func!(
@@ -106,45 +104,6 @@ where
     }
 }
 
-/// `ta:TA` -> `ta.deref():TB`, with TF specifying TA and TB
-///
-/// Mainly to decide TA via TB
-pub struct MapDerefT<TF>(PhantomData<TF>);
-
-impl_phantom!(MapDerefT<T>);
-
-impl<'a, TF, TA, TB> TypeFunc<&'a TA> for MapDerefT<TF>
-where
-    TA: Deref<Target = TB>,
-    TB: 'a,
-    TF: TypeFunc<TA, Output = TB>,
-{
-    type Output = &'a TB;
-}
-
-impl<'a, TF, TA, TB> BijectiveTypeFunc<&'a TB> for MapDerefT<TF>
-where
-    TA: Deref<Target = TB>,
-    TB: 'a,
-    TA: 'a,
-    TF: BijectiveTypeFunc<TB, Input = TA>,
-{
-    type Input = &'a TA;
-}
-
-impl<'a, TF, TA, TB> Func<&'a TA> for MapDerefT<TF>
-where
-    TA: Deref<Target = TB>,
-    TB: 'a,
-    TF: TypeFunc<TA, Output = TB>,
-{
-    type Output = &'a TB;
-
-    fn call(i: &'a TA) -> Self::Output {
-        i.deref()
-    }
-}
-
 new_struct_func! {
     pub MapClone
     impl <'a,T> {where T:Clone+'a}:
@@ -172,38 +131,40 @@ new_struct_func! {
 #[derive(Debug, Default, Clone, Copy)]
 pub struct MapNeg;
 
-impl<T1, T2> crate::type_fn::TypeFunc<T1> for MapNeg
+impl<T1, T2> TypeFunc<T1> for MapNeg
 where
     T1: Neg<Output = T2>,
 {
     type Output = T2;
 }
-impl<T1, T2> crate::type_fn::BijectiveTypeFunc<T2> for MapNeg
+impl<T1, T2> BijectiveTypeFunc<T2> for MapNeg
 where
     T1: Neg<Output = T2>,
     T2: Neg<Output = T1>,
 {
     type Input = T1;
 }
-impl<T1, T2> frunk::traits::Func<T1> for MapNeg
+impl<T1, T2> Func<T1> for MapNeg
 where
     T1: Neg<Output = T2>,
 {
     type Output = T2;
     fn call(i: T1) -> Self::Output {
-        let f = crate::utils::restrict_fn_once_type::<_, T1, T2>((|i| -i));
-        f(i)
+        -i
+        // let f = crate::utils::restrict_fn_once_type::<_, T1, T2>((|i| -i));
+        // f(i)
     }
 }
-impl<T1, T2> crate::type_fn::BijectiveFunc<T2> for MapNeg
+impl<T1, T2> BijectiveFunc<T2> for MapNeg
 where
     T1: Neg<Output = T2>,
     T2: Neg<Output = T1>,
 {
     type Input = T1;
     fn inv_call(o: T2) -> Self::Input {
-        let f = crate::utils::restrict_fn_once_type::<_, T2, T1>((|i| -i));
-        f(o)
+        -o
+        // let f = crate::utils::restrict_fn_once_type::<_, T2, T1>((|i| -i));
+        // f(o)
     }
 }
 
@@ -286,6 +247,39 @@ new_struct_func_op_assign!(MapBitXorAssign, BitXorAssign, ^=);
 new_struct_func_op!(MapBitAnd, BitAnd, &);
 new_struct_func_op!(MapBitOr,  BitOr,  |);
 new_struct_func_op!(MapBitXor, BitXor, ^);
+
+macro_rules! new_struct_func_op_self_fixed_output {
+	($sname:ident,$tname:ident,$op:tt,$output:ty) => {
+crate::new_struct_func!(
+	pub $sname
+	impl<'a,A> {where A:$tname}:
+	((&'a A,&'a A)) -> ($output)
+	|(a,b)|{a $op b}
+);
+	};
+}
+
+new_struct_func_op_self_fixed_output!(MapEq, Eq, ==, bool);
+new_struct_func_op_self_fixed_output!(MapPartialEq, PartialEq, ==, bool);
+new_struct_func_op_self_fixed_output!(MapPartialNe, PartialEq, !=, bool);
+new_struct_func_op_self_fixed_output!(MapPartialOrdLT, PartialOrd, <, bool);
+new_struct_func_op_self_fixed_output!(MapPartialOrdLE, PartialOrd, <=, bool);
+new_struct_func_op_self_fixed_output!(MapPartialOrdGT, PartialOrd, >, bool);
+new_struct_func_op_self_fixed_output!(MapPartialOrdGE, PartialOrd, >=, bool);
+
+macro_rules! new_struct_func_op_bool {
+	($sname:ident,$op:tt) => {
+crate::new_struct_func!(
+	pub $sname
+	impl:
+	((bool,bool)) -> (bool)
+	|(a,b)|{a $op b}
+);
+	};
+}
+new_struct_func_op_bool!(MapBoolAnd,&&);
+new_struct_func_op_bool!(MapBoolOr,||);
+new_struct_func_op_bool!(MapBoolXor,^);
 
 /// 补全对BitAnd, BitOr,BitXor
 
@@ -452,31 +446,31 @@ new_struct_func!(pub MapToHList impl <T> : (T) <-> (HList!(T)) |i|HCons{head:i,t
 new_struct_func! {pub MapClone2 < 'a > impl < T > {where T:'a+Clone} : (&'a T) <-> (T) |i|i.clone()}
 
 new_struct_func! {pub FoldApply impl<F,I,O> {where F:Func<I,Output=O>}: ( (I,F) )->(O) |(i,_f)|F::call(i)}
+
+/// <HMapP<H,MapToPhantom> as Default>::default()
+pub fn h_phantom<H>()
+->HMapP<H,MapToPhantom>
+where H:HMappable<Poly<MapToPhantom>, Output :Default>
+{
+    <HMapP<H,MapToPhantom> as Default>::default()
+}
 #[cfg(test)]
 mod test {
     use frunk::hlist;
-
-    use crate::h_h_zippable::HHZippable;
 
     use super::*;
 
     #[test]
     fn test_repeat() {
         assert_eq!(
-            hlist![1, 2.0, "3"].h_zip(
+            hlist![1, 2.0, "3"].zip(
                 // <HRepeat<_,HNil> as Default>::default()
-                h_repeat(HNil)
+                h_repeat("spam")
             ),
             hlist![
-                HCons {
-                    head: 1,
-                    tail: HNil
-                },
-                HCons {
-                    head: 2.0,
-                    tail: HNil
-                },
-                hlist!("3")
+                (1,"spam"),
+                (2.0,"spam"),
+                ("3","spam")
             ]
         )
     }

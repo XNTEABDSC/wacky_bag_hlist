@@ -4,9 +4,9 @@
 
 use frunk::{Func, Poly, hlist::{HFoldLeftable, HFoldRightable, HMappable}};
 
-use crate::{h_list_helpers::FoldApply, reverse_func::MapReverse, type_fn::BijectiveFunc };
+use crate::{h_list_helpers::FoldApply, inverse_func::MapReverse, type_fn::BijectiveFunc };
 
-/// chain n functions together 
+/// chain hlist of functions together 
 /// 
 /// call left to right
 #[derive(Debug,Default,Clone, Copy)]
@@ -38,7 +38,7 @@ mod test{
 	
     use frunk::{Func, hlist};
 
-	use crate::{h_chain_fn::HChainFunc, h_list_helpers::FoldApply, new_new_type_func, reverse_func::ReverseFunc};
+	use crate::{h_chain_fn::HChainFunc, h_list_helpers::FoldApply, new_new_type_func, inverse_func::InverseFunc};
 
 	struct AWD<T>(pub T);
 	new_new_type_func!(AWD MapAWD);
@@ -52,7 +52,7 @@ mod test{
 		let v=1;
 		// let fv=fawd.foldl(Poly(FoldApply), v);
 		let fv=FoldApply::call((v,f));
-		let v=FoldApply::call( (fv,ReverseFunc(f))  );
+		let v=FoldApply::call( (fv,InverseFunc(f))  );
 		assert_eq!(v,1);
 	}
 }

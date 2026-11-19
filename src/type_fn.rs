@@ -3,7 +3,7 @@
 // //! [`TypeFunc`]
 // //! [`BijectiveTypeFunc`]
 // //! [`BijectiveFunc`]
-// //! [`ReverseFunc`]
+// //! [`InverseFunc`]
 // //! [`FuncAsTypeFunc`]
 // //! [`TypeFnAsPhantomFn`]
 // //! [`impl_func`]
