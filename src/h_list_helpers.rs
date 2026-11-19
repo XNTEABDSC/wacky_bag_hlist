@@ -73,36 +73,6 @@ new_struct_func! {
     (&'a mut TA) -> (&'a mut TB)
     |i|i.deref_mut()
 }
-/// deref_mut smth and return things unrelated to its lifetime
-#[derive(Debug, Default, Clone, Copy)]
-pub struct TakeDerefMap<F>(pub F);
-
-impl<F, I, O, IM> Func<IM> for TakeDerefMap<F>
-where
-    for<'a> F: Func<&'a I, Output = O>,
-    IM: Deref<Target = I>,
-{
-    type Output = O;
-
-    fn call(i: IM) -> Self::Output {
-        F::call(i.deref())
-    }
-}
-/// deref_mut smth and return things unrelated to its lifetime
-#[derive(Debug, Default, Clone, Copy)]
-pub struct TakeDerefMutMap<F>(pub F);
-
-impl<F, I, O, IM> Func<IM> for TakeDerefMutMap<F>
-where
-    for<'a> F: Func<&'a mut I, Output = O>,
-    IM: Deref<Target = I> + DerefMut,
-{
-    type Output = O;
-
-    fn call(mut i: IM) -> Self::Output {
-        F::call(i.deref_mut())
-    }
-}
 
 new_struct_func! {
     pub MapClone
@@ -117,13 +87,6 @@ new_struct_func! {
     (&'a mut T) <-> (&'a T)
     |i|i
 }
-
-// new_struct_func! {
-//     pub MapNeg
-//     impl <T> {where T:Neg}:
-//     (T) -> (T::Output)
-//     |i|-i
-// }
 
 /// a:A -> b:B=-a
 /// 
@@ -151,8 +114,6 @@ where
     type Output = T2;
     fn call(i: T1) -> Self::Output {
         -i
-        // let f = crate::utils::restrict_fn_once_type::<_, T1, T2>((|i| -i));
-        // f(i)
     }
 }
 impl<T1, T2> BijectiveFunc<T2> for MapNeg
@@ -163,8 +124,6 @@ where
     type Input = T1;
     fn inv_call(o: T2) -> Self::Input {
         -o
-        // let f = crate::utils::restrict_fn_once_type::<_, T2, T1>((|i| -i));
-        // f(o)
     }
 }
 
