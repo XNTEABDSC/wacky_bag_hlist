@@ -12,8 +12,7 @@ new_struct_func!(
     impl<T>{where T:Add<T>+Clone} // impl with generic parameter, can add where clause inside a {}
     :
     (T) -> (<T as Add<T>>::Output) // input output type, -> is one dir (injective), <-> is bijective
-    |i|i.clone()+i // FnOnce(T)->PhantomData<T>
-    // |_p|panic!() // BijectiveFunc if you want
+    |i|i.clone()+i
 );
 assert_eq!(
   hlist![1,2.0,3usize].map(Poly(AddSelf)),
