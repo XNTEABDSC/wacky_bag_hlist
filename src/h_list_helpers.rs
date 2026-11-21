@@ -34,8 +34,7 @@
 use std::{iter::Chain, marker::PhantomData, ops::*};
 
 use frunk::{
-    Func, HCons, HList, HNil, Poly, ToMut, ToRef,
-    hlist::{HMappable, HZippable},
+    Func, HCons, HList, HNil, Poly, ToMut, ToRef, hlist::{HFoldLeftable, HFoldRightable, HMappable, HZippable},
 };
 
 use crate::{
@@ -380,13 +379,16 @@ where
 ```
 # use frunk::hlist;
 # use wacky_bag_hlist::h_list_helpers::HRepeat;
-# use wacky_bag_hlist::h_h_zippable::HHZippable;
 assert_eq!(
-    hlist![1,2.0,"3"].h_zip(
-        // <HRepeat<_,HNil> as Default>::default()
-        h_repeat(HNil)
-    ),
-    hlist![HCons{head:1,tail:HNil},HCons{head:2.0,tail:HNil},hlist!("3")]
+  hlist![1, 2.0, "3"].zip(
+    // <HRepeat<_,HNil> as Default>::default()
+    h_repeat("spam")
+  ),
+  hlist![
+    (1,"spam"),
+    (2.0,"spam"),
+    ("3","spam")
+  ]
 )
 ```
  */
@@ -402,6 +404,8 @@ where
 
 new_struct_func!(pub MapToHList impl <T> : (T) <-> (HList!(T)) |i|HCons{head:i,tail:HNil},|h|h.head );
 
+new_struct_func!(pub MapHCons impl <A,B> : ((A,B)) <-> (HCons<A,B>) |(a,b)|HCons{head:a,tail:b});
+
 new_struct_func! {pub MapClone2 < 'a > impl < T > {where T:'a+Clone} : (&'a T) <-> (T) |i|i.clone()}
 
 new_struct_func! {pub FoldApply impl<F,I,O> {where F:Func<I,Output=O>}: ( (I,F) )->(O) |(i,_f)|F::call(i)}
@@ -413,6 +417,79 @@ where H:HMappable<Poly<MapToPhantom>, Output :Default>
 {
     <HMapP<H,MapToPhantom> as Default>::default()
 }
+
+/// [HFoldLeftable]
+#[derive(Debug,Default,Clone, Copy)]
+pub struct FHFoldLeft<F>(pub F);
+
+impl<F,I,Acc,O> Func<(Acc,I)> for FHFoldLeft<F>
+where I:HFoldLeftable<F,Acc,Output = O>,
+F:Default
+{
+    type Output=O;
+
+    fn call((acc,i): (Acc,I)) -> Self::Output {
+        i.foldl(F::default(), acc)
+    }
+}
+
+impl<F,I,Acc,O> TypeFunc<(Acc,I)> for FHFoldLeft<F>
+where I:HFoldLeftable<F,Acc,Output = O>,
+F:Default
+{
+    type Output=O;
+}
+
+/// [HFoldRightable]
+#[derive(Debug,Default,Clone, Copy)]
+pub struct FHFoldRight<F>(pub F);
+
+impl<F,I,Acc,O> Func<(Acc,I)> for FHFoldRight<F>
+where I:HFoldRightable<F,Acc,Output = O>,
+F:Default
+{
+    type Output=O;
+
+    fn call((acc,i): (Acc,I)) -> Self::Output {
+        i.foldr(F::default(), acc)
+    }
+}
+
+impl<F,I,Acc,O> TypeFunc<(Acc,I)> for FHFoldRight<F>
+where I:HFoldRightable<F,Acc,Output = O>,
+F:Default
+{
+    type Output=O;
+}
+
+new_struct_func!(
+    pub FTuple2Swap
+    impl<A,B>:
+    ((A,B))<->((B,A))
+    |(a,b)|{(b,a)},
+    |(a,b)|{(b,a)}
+);
+
+new_struct_func!(
+    pub FHZip
+    impl<A,B,O> {where A:HZippable<B,Zipped=O>}:
+    ((A,B))->(O)
+    |(a,b)|{a.zip(b)}
+);
+
+/// [`HMappable`]
+#[derive(Debug,Default,Clone, Copy)]
+pub struct FHMap<F>(pub F);
+impl<F:Default,I,O> Func<I> for FHMap<F>
+where I:HMappable<F,Output = O>
+{
+    type Output=O;
+
+    fn call(i: I) -> Self::Output {
+        i.map(F::default())
+    }
+}
+
 #[cfg(test)]
 mod test {
     use frunk::hlist;
