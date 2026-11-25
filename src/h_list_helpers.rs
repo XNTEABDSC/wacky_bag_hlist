@@ -49,6 +49,14 @@ new_struct_func!(
 );
 
 new_struct_func!(
+    pub FIdent
+    impl<T>:
+    (T)<->(T)
+    |a|a,
+    |a|a
+);
+
+new_struct_func!(
     pub FoldChainIter impl <Acc,X,Item>
     {where Acc:Iterator<Item = Item>,
         X:Iterator<Item = Item>}
@@ -238,8 +246,6 @@ crate::new_struct_func!(
 new_struct_func_op_bool!(MapBoolAnd,&&);
 new_struct_func_op_bool!(MapBoolOr,||);
 new_struct_func_op_bool!(MapBoolXor,^);
-
-/// 补全对BitAnd, BitOr,BitXor
 
 // new_struct_func!(
 // 	pub MapAdd
