@@ -18,6 +18,7 @@ pub mod with_type_hint;
 pub mod hlist_coprod;
 pub mod h_with_index;
 pub mod h_select_coprod;
+pub mod coprod_zip;
 // pub mod labelled_hlist;
 
 #[cfg(test)]

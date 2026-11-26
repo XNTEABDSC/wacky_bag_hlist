@@ -1,8 +1,8 @@
 use std::{marker::PhantomData, ops::ControlFlow};
 
-use frunk::{Func, Poly, coproduct::CoprodInjector, hlist::HFoldLeftable};
+use frunk::{Func, HList, Poly, coproduct::CoprodInjector, hlist::HFoldLeftable};
 
-use crate::{h_list_helpers::FIdent, h_with_index::HWithIndex, hlist_coprod::HListToCoprod};
+use crate::{chain_fn::ChainFunc, h_chain_fn::HChainFunc, h_list_helpers::{FIdent, FTuple2Swap, HMap, HZip}, h_with_index::HWithIndex, hlist_coprod::HListToCoprod, type_fn::TypeFunc};
 
 /// fold fn for [`h_select_coprod`]
 #[derive(Debug,Default,Clone, Copy)]
@@ -39,11 +39,9 @@ where Self:
 >+Sized
 {
     /// the Coprod of value
-    type Coprod;
-    /// ther return type of [`Self::select_coprod`]
-    type Result;
+    type SelectCoprod;
     /// [`h_select_coprod`]
-    fn select_coprod(self,select_fn:SelectFn,select_state:SelectorState)->Self::Result;
+    fn select_coprod(self,select_fn:SelectFn,select_state:SelectorState)->ControlFlow<Self::SelectCoprod ,SelectorState>;
 }
 
 impl<H,SelectFn,SelectorState> HSelectableCoprod<SelectFn,SelectorState> for H
@@ -57,9 +55,8 @@ where H:
     >
 >
 {
-    type Coprod=<Self as HListToCoprod>::Coprod;
-    type Result=ControlFlow<<H as HListToCoprod>::Coprod ,SelectorState>;
-    fn select_coprod(self,select_fn:SelectFn,select_state:SelectorState)->Self::Result{
+    type SelectCoprod = <Self as HListToCoprod>::Coprod;
+    fn select_coprod(self,select_fn:SelectFn,select_state:SelectorState)->ControlFlow<Self::SelectCoprod ,SelectorState>{
         h_select_coprod(self, select_fn, select_state)
     }
 }
@@ -83,6 +80,23 @@ where H:
 {
     let values_index=values.with_index();
     values_index.foldl(Poly(FoldSelectCoprod(select_fn)), ControlFlow::Continue(select_state))
+}
+
+/// acc:usize
+/// 
+/// `if acc==0 {x} else {acc-1}`
+pub struct FoldCountSelect;
+
+impl<T> Func<(usize,T)> for FoldCountSelect {
+    type Output=ControlFlow<T,usize>;
+
+    fn call((c,v): (usize,T)) -> Self::Output {
+        if c==0 {
+            ControlFlow::Break(v)
+        }else {
+            ControlFlow::Continue(c-1)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -119,5 +133,8 @@ use frunk::hlist;
         // let res=values_index.foldl(Poly(a_select), init);
         let res=h_select_coprod(values, TestSelect, falling_num);
         println!("{:?}",res);
+
+        let res_2=h_select_coprod(values, FoldCountSelect, 2);
+        println!("{:?}",res_2);
     }
 }

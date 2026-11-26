@@ -475,12 +475,30 @@ new_struct_func!(
     |(a,b)|{(b,a)},
     |(a,b)|{(b,a)}
 );
+new_struct_func!(
+    pub FTuple2Sel1
+    impl<A,B>:
+    ((A,B))->(A)
+    |(a,_b)|{a}
+);
+new_struct_func!(
+    pub FTuple2Sel2
+    impl<A,B>:
+    ((A,B))->(B)
+    |(_a,b)|{b}
+);
 
 new_struct_func!(
     pub FHZip
     impl<A,B,O> {where A:HZippable<B,Zipped=O>}:
     ((A,B))->(O)
     |(a,b)|{a.zip(b)}
+);
+
+new_struct_func!(
+    pub FControlFlowTypes
+    impl<B,C>:
+    (ControlFlow<B,C>)<->((B,C))
 );
 
 /// [`HMappable`]
@@ -495,6 +513,8 @@ where I:HMappable<F,Output = O>
         i.map(F::default())
     }
 }
+
+
 
 #[cfg(test)]
 mod test {
