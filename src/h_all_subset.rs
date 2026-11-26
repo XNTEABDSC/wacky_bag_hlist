@@ -1,47 +1,44 @@
 use std::{marker::PhantomData, ops::Add};
 
-use frunk::{Coproduct, HCons, HNil, Poly, coproduct::CNil, hlist::HMappable};
+use frunk::{Coproduct, HCons, HList, HNil, Poly, coproduct::{CNil, CoproductMappable}, hlist::HMappable};
 
-use crate::new_struct_func;
+use crate::{c_append::CoprodAppend, h_list_helpers::HTypeFnToMapper, new_struct_func};
 
-pub trait CoprodAppend<B> {
-    type Output;
-}
-
-impl<B> CoprodAppend<B> for CNil {
-    type Output=B;
-}
-
-impl<H,T,B> CoprodAppend<B> for Coproduct<H,T>
-where T:CoprodAppend<B>
-{
-    type Output = Coproduct<H,T::Output>;
-}
-
+/// hlist Self to coprod of all subset of Self's element (2^n)
+/// 
+/// just for fun.
 pub trait HAllSubsetC {
+    /// coprod of all subset of Self's element (2^n)
     type Output;
 }
 
 impl HAllSubsetC for HNil {
-    type Output=CNil;
+    type Output=Coproduct<HNil,CNil>;
 }
 
-// impl<H,T> HAllSubsetC for HCons<H,T>
-// where T:HAllSubsetC,
-//     T::Output:CoprodAppend<
+impl<H,T,TAll,TAllH,R> HAllSubsetC for HCons<H,T>
+where 
+    T:
+        HAllSubsetC<Output = TAll>,
+    TAll:
+        CoproductMappable< Poly<HTypeFnToMapper<FHAppend<H>>>,
+        Output = TAllH>,
+    TAllH:CoprodAppend<TAll,Output = R>
+{
+    type Output = R;
+}
 
-//     >
-// {
-//     type Output = Coproduct<>;
-// }
-
+/// hlist Self to hlist of all subset of Self's element (2^n)
+/// 
+/// just for fun.
 pub trait HAllSubsetT {
+    /// hlist of all subset of Self's element (2^n)
     type Output;
-    // fn all_subset(self)->Self::Output;
+    
 }
 
 impl HAllSubsetT for HNil {
-    type Output=HNil;
+    type Output=HList!(HNil);
 
     // fn all_subset(self)->Self::Output {
     //     self
@@ -51,29 +48,45 @@ impl HAllSubsetT for HNil {
 new_struct_func!(
     pub FHAppend<A>
     impl<H>:
-    ((A,H))->(HCons<A,H>)
+    (H)->(HCons<A,H>)
 );
 
 impl<H,T,TAll,TAllH,R> HAllSubsetT for HCons<H,T>
-where T:HAllSubsetT<Output = TAll>+Add<TAllH,Output = R>,
-    TAll:HMappable<Poly<FHAppend<H>>,Output = TAllH>
+where 
+    T:
+        HAllSubsetT<Output = TAll>,
+    TAll:
+        HMappable< Poly<HTypeFnToMapper<FHAppend<H>>>,
+        Output = TAllH>,
+    TAllH:Add<TAll,Output = R>
 {
     type Output = R;
 }
+
+// you dont really want this right
+
 #[cfg(test)]
 mod tests{
-    use frunk::hlist;
+    use std::marker::PhantomData;
 
-use crate::h_all_subset::HAllSubsetT;
+    use frunk::{Func, HList, HNil, Poly, hlist::HMappable};
 
-    type A=hlist![String,i32,i64,f32];
+    use crate::{chain_fn::ChainFunc, h_all_subset::{FHAppend, HAllSubsetC, HAllSubsetT}, h_chain_fn::HChainFunc, h_list_helpers::MapToPhantom, type_fn::{MapFromPhantomDataPanic, TypeFnAsPhantomFn}};
+
+    // type A=HList![String,i32,i64,f32];
+    type A=HList![String,i32];
 
     type B=<A as HAllSubsetT>::Output;
 
+    type C=<A as HAllSubsetC>::Output;
+
     #[test]
     fn test() {
-        let b:B=Default::default();
+        let b: B =Default::default();
         print!("{:?}",b);
+
+        let c:C=C::inject(HNil);
+        print!("{:?}",c);
     }
 
 }
