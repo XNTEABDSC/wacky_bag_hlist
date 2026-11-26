@@ -4,7 +4,7 @@
 
 use frunk::{Func, Poly, hlist::{HFoldLeftable, HFoldRightable, HMappable}};
 
-use crate::{h_list_helpers::FoldApply, inverse_func::MapReverse, type_fn::BijectiveFunc };
+use crate::{h_list_helpers::FoldApply, inverse_func::MapInverse, type_fn::BijectiveFunc };
 
 /// chain hlist of functions together 
 /// 
@@ -25,12 +25,12 @@ where
 
 impl<I,O,F> BijectiveFunc<O> for HChainFunc<F>
 where 
-	F:Default + HMappable<Poly< MapReverse >, Output : HFoldRightable<Poly<FoldApply>,O,Output = I> > + HFoldLeftable<Poly<FoldApply>,I,Output = O>
+	F:Default + HMappable<Poly< MapInverse >, Output : HFoldRightable<Poly<FoldApply>,O,Output = I> > + HFoldLeftable<Poly<FoldApply>,I,Output = O>
 {
 	type Input=I;
 
 	fn inv_call(output:O)->Self::Input {
-		F::default().map(Poly(MapReverse)).foldr(Poly(FoldApply), output)
+		F::default().map(Poly(MapInverse)).foldr(Poly(FoldApply), output)
 	}
 }
 #[cfg(test)]
@@ -45,9 +45,14 @@ mod test{
 
 	struct BWD<T>(pub T);
 	new_new_type_func!(BWD MapBWD);
+	
+	struct CWD<T>(pub T);
+	new_new_type_func!(CWD MapCWD);
+	struct DWD<T>(pub T);
+	new_new_type_func!(DWD MapDWD);
 	#[test]
 	fn test(){
-		let fawd=hlist![MapAWD,MapBWD];
+		let fawd=hlist![MapAWD,MapBWD,MapCWD,MapDWD];
 		let f=HChainFunc(fawd);
 		let v=1;
 		// let fv=fawd.foldl(Poly(FoldApply), v);

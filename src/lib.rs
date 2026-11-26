@@ -20,6 +20,7 @@ pub mod h_with_index;
 pub mod h_select_coprod;
 pub mod coprod_zip;
 pub mod h_all_subset;
+pub mod c_append;
 // pub mod labelled_hlist;
 
 #[cfg(test)]
