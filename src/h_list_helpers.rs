@@ -304,6 +304,7 @@ pub type HTypeMapP<HList, TypeFunc> = HMapP<HList, HTypeFnToMapper<TypeFunc>>;
 ///
 /// `ChainFunc<ChainFunc<MapToPhantom,TypeFn>,MapPhantomType>`
 pub type HTypeFnToMapper<TypeFn> =
+    // HChainFunc<HList!(MapToPhantom,TypeFnAsPhantomFn<TypeFn>,MapFromPhantomDataPanic)>;
     ChainFunc<ChainFunc<MapToPhantom, TypeFnAsPhantomFn<TypeFn>>, MapFromPhantomDataPanic>;
 
 /// repeat `Input` to get `Self`
