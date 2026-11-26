@@ -39,4 +39,4 @@ impl<T,I,O> BijectiveFunc<I> for InverseFunc<T>
 	}
 }
 
-new_new_type_func!(InverseFunc pub MapReverse);
+new_new_type_func!(InverseFunc pub MapInverse);
