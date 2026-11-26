@@ -97,6 +97,7 @@ impl<T,I,O> BijectiveFunc<O> for FuncAsTypeFunc<T>
 /// converts [TypeFunc] into [Func] that uses [PhantomData] as input and output
 /// 
 /// useful in type expression that can't provide implementation, while can be used by [super::h_list_helpers::HMapP]
+#[derive(Debug,Default,Clone, Copy)]
 pub struct TypeFnAsPhantomFn<F>(pub F);
 
 impl<T,I,O> Func<PhantomData<I>> for TypeFnAsPhantomFn<T>
