@@ -540,6 +540,30 @@ where I:HMappable<F,Output = O>
     }
 }
 
+/// `HList![T...]:HFoldRightable< Poly<FFoldCloneZip>,B ,Output = HList![(T,B)...]>`
+pub struct FFoldCloneZip;
+
+impl<HL,B,T> TypeFunc< ((HL,B),T) > for FFoldCloneZip
+{
+    type Output = ( HCons<(T,B),HL> ,B);
+    
+}
+
+impl<HL,B,T> Func< ((HL,B),T) > for FFoldCloneZip
+where B:Clone
+{
+    type Output = ( HCons<(T,B),HL> ,B);
+    
+    fn call(((hl,b),t): ((HL,B),T)) -> Self::Output {
+        (
+            HCons{
+                head:(t,b.clone()),
+                tail:hl
+            },
+            b
+        )
+    }
+}
 
 
 #[cfg(test)]
