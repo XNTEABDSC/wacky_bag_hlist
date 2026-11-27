@@ -269,7 +269,7 @@ macro_rules! new_struct_func {
 	)
 	]
 
-	$vis struct $name < $($tt),* > (pub PhantomData< $crate::phantom_data_type_params!( $($tt),* ) >);
+	$vis struct $name < $($tt),* > (pub std::marker::PhantomData< $crate::phantom_data_type_params!( $($tt),* ) >);
 
 	$crate::impl_phantom!{ $name < $($tt),* >}
 
@@ -308,7 +308,7 @@ macro_rules! new_struct_func {
 		"`"
 	)]
 
-	$vis struct $name <$($sglt,)* $($sgty),*> (pub PhantomData< $crate::phantom_data_type_params!( $($sglt),*$($sgty),* ) >);
+	$vis struct $name <$($sglt,)* $($sgty),*> (pub std::marker::PhantomData< $crate::phantom_data_type_params!( $($sglt),*$($sgty),* ) >);
 
 	$crate::impl_phantom!{ $name <$($sglt),*$($sgty),*>}
 
