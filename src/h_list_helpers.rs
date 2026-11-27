@@ -281,6 +281,21 @@ pub type HToRef<'a, T> = <T as ToRef<'a>>::Output;
 ///
 /// [`ToMut`]
 pub type HToMut<'a, T> = <T as ToMut<'a>>::Output;
+
+new_struct_func!(
+    pub FToRef
+    impl<'a,T>{where T:ToRef<'a>}:
+    (&'a T)->(T::Output)
+    |v|v.to_ref()
+);
+
+new_struct_func!(
+    pub FToMut
+    impl<'a,T>{where T:ToMut<'a>}:
+    (&'a mut T)->(T::Output)
+    |v|v.to_mut()
+);
+
 /// `<A as Add<B>>::Output`
 ///
 /// [Add]
@@ -487,6 +502,16 @@ new_struct_func!(
     impl<A,B>:
     ((A,B))->(B)
     |(_a,b)|{b}
+);
+new_struct_func!(
+    pub FTuple2With1<A>
+    impl<B>:
+    (B)->((A,B))
+);
+new_struct_func!(
+    pub FTuple2With2<B>
+    impl<A>:
+    (A)->((A,B))
 );
 
 new_struct_func!(
